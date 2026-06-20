@@ -1,0 +1,31 @@
+name: Build APK
+on:
+  repository_dispatch:
+    types: [build_apk]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+          
+      - name: Build APK
+        run: |
+          # Extract base.zip jika perlu
+          unzip -o base.zip -d project/
+          cd project
+          # Build commands sesuai project
+          chmod +x gradlew
+          ./gradlew assembleDebug
+          
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-apk
+          path: project/app/build/outputs/apk/debug/*.apk
